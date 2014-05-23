@@ -1,9 +1,19 @@
 
+// shortcuts for common colors
 #define glBlack glColor3f(0.0,0.0,0.0)
 #define glWhite glColor3f(1.0,1.0,1.0)
+#define glGray(i) glColor3f(1.0*i,1.0*i,1.0*i)
+#define glRed(i) glColor3f(1.0*i,0.0,0.0)
+#define glGreen(i) glColor3f(0.0,1.0*i,0.0)
+#define glBlue(i) glColor3f(0.0,0.0,1.0*i)
+#define glYellow(i) glColor3f(1.0*i,1.0*i,0.0)
+#define glMagenta(i) glColor3f(1.0*i,0.0,1.0*i)
+#define glCyan(i) glColor3f(0.0,1.0*i,1.0*i)
 
 int screen_width;
 int screen_height;
+
+float arat;	//aspect ratio
 
 unsigned char Redisplay=1;
 
@@ -35,6 +45,13 @@ struct ChrFont
 };
 
 struct ChrFont Font;
+
+// coordinates of screen division (window borders)
+float wd_x1=0.0;	// center of screen
+float wd_y1=-0.5;	// bottom of screen (for time window)
+// ---
+
+// --- common routines declaration ---
 
 void load_chr_font(char *fname) // Borland .chr font loader (simple and brutal)
 {
@@ -137,8 +154,8 @@ void DrawChar(unsigned char code, struct ChrFont fnt, float x, float y, float sx
             ix = ((float)k1 / fnt.mWidth)*sx;
             iy = ((float)k2 / fnt.mHeight)*sy;
             glBegin(GL_LINES);
-            glVertex2f(x+px,y+py);
-            glVertex2f(x+ix,y+iy);
+            glVertex2f(x+px,y+py*arat);
+            glVertex2f(x+ix,y+iy*arat);
             glEnd();
             px = ix; py = iy;
         }
