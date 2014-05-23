@@ -14,31 +14,47 @@ char *data_file;
 
 void Draw ()
 {
-	glColor3f(1.0,1.0,1.0);
+	glWhite;
 	glBegin(GL_QUADS);
 	glVertex2f(-1.0,1.0);
 	glVertex2f(1.0,1.0);
 	glVertex2f(1.0,-1.0);
 	glVertex2f(-1.0,-1.0);
 	glEnd();
+	glBlack;
 	glBegin(GL_LINES);
-	glVertex2f(mx,my);
-	glVertex2f(mx,my-0.01);
-	glVertex2f(mx,my);
-	glVertex2f(mx-0.01, my+0.005);
-	glVertex2f(mx,my);
-	glVertex2f(mx+0.01, my+0.005);
+	glVertex2i(mix,miy);
+	glVertex2i(mix,miy-10);
+	glVertex2i(mix,miy);
+	glVertex2i(mix-10, miy+10);
+	glVertex2i(mix,miy);
+	glVertex2i(mix+10, miy+10);
 	glEnd();
+
+	glfwSwapBuffers(window);
+
 	Redisplay = 0;
 }
 
 void key_callback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
 {
+    if ((action == GLFW_PRESS)||(action == GLFW_REPEAT)) switch (key)
+    {
+        case GLFW_KEY_Q:
+        {
+            if (mods==GLFW_MOD_CONTROL) glfwSetWindowShouldClose(window, GL_TRUE);
+            break;
+        }
+        default:
+			keycode=key;
+	}
+	Redisplay = 1;
 }
 
 void mousemove(GLFWwindow *wnd, double x, double y)
 {
     mx = ((float)x / (screen_width/2)) - 1.0F; my = 1.0F-((float)y / (screen_height/2));
+    mix = (int)round(x); miy = (int)round(y);
     Redisplay=1;
 }
 
@@ -60,15 +76,15 @@ int main (int argc, char *argv[])	// MAIN
     FILE *f;
     int i=0;
 
-    if (argc!=3)
-    {
-      print_usage();
-      exit(0);
-    }
-    coo_file=argv[1];
-    data_file=argv[2];
+//    if (argc!=3)
+//    {
+//      print_usage();
+//      exit(0);
+//    }
+//   coo_file=argv[1];
+//    data_file=argv[2];
 
-    load_chr_font("DRFT.CHR");
+//    load_chr_font("DRFT.CHR");
 
     if (!glfwInit())
         exit(EXIT_FAILURE);

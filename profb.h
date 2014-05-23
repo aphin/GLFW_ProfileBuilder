@@ -1,4 +1,7 @@
 
+#define glBlack glColor3f(0.0,0.0,0.0)
+#define glWhite glColor3f(1.0,1.0,1.0)
+
 int screen_width;
 int screen_height;
 
@@ -9,6 +12,11 @@ const float vscale = 0.06F;
 
 float mx;
 float my;
+
+int mix;
+int miy;
+
+int keycode;
 
 struct ChrFont
 {
