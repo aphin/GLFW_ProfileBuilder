@@ -7,9 +7,8 @@ unsigned char Redisplay=1;
 const float hscale = 0.15F;
 const float vscale = 0.06F;
 
-int mousex;
-int mousey;
-int cpos;
+float mx;
+float my;
 
 struct ChrFont
 {
