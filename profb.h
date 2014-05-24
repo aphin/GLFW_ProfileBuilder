@@ -48,7 +48,9 @@ struct ChrFont Font;
 
 // coordinates of screen division (window borders)
 float wd_x1=0.0;	// center of screen
-float wd_y1=-0.5;	// bottom of screen (for time window)
+float wd_y1=-0.8;	// bottom of screen (for time window)
+float px;			// Pixel width
+float py;			// Pixel height
 // ---
 
 // --- common routines declaration ---
