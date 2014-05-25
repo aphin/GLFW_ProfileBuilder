@@ -27,6 +27,12 @@ char *data_file;
 	float max_coo_y;
 	float min_coo_h;
 	float max_coo_h;
+	float coo_w;
+	float coo_h;
+	float coo_a;
+	float min_data[2];
+	float max_data[2];
+	float data_w[2];
 // ---
 
 void Draw ()
@@ -55,7 +61,8 @@ void Draw ()
 			if (selected[i]==1) glRed(1.0f); else glGray(0.5f);
 			glBegin(GL_POINTS);
 			glVertex2f(x,wd_y1 - (wd_y1+1.0)/2); // point on time strip
-			glVertex2f(-1.0F+((coord[i][0]-min_coo_x)/(max_coo_x-min_coo_x))*(1.0F+wd_x1),1.0F-((coord[i][1]-min_coo_y)/(max_coo_y-min_coo_y))*(1.0F-wd_y1));
+			glVertex2f(-0.99+((coord[i][0]-min_coo_x)/coo_w)*(1.0+wd_x1-0.02),0.99-((coord[i][1]-min_coo_y)/coo_h)*(1.0-wd_y1-0.02));	// point in plain coordinates window
+			glVertex2f((wd_x1+0.02)+((data[i+14400][0]-min_data[0])/data_w[0])*(1.0-wd_x1-0.02),0.99-((coord[i][2]-min_coo_h)/coo_a)*(1.0-wd_y1-0.02)); // point in profile window
 			glEnd();
 		}
 		glPointSize(1);
@@ -205,6 +212,33 @@ void mousemove(GLFWwindow *wnd, double x, double y)
 
 void mousepress(GLFWwindow *wnd, int button, int state, int mods)
 {
+	int pi=0;
+	int i;
+	float wxx;
+	float wyy;
+
+	if (button==GLFW_MOUSE_BUTTON_LEFT)
+	{
+		// first we need to find point index (pi) using cursor coordinates
+		if ((mx >= -0.99)&&(mx <= (wd_x1-0.01))&&(my <= 0.99)&&(my >= (wd_y1+0.01)))
+		{
+			// in coordinates window
+			wxx = min_coo_x + ((mx + 0.99)/(1.0+wd_x1-0.02)*coo_w);
+			wyy = min_coo_y + ((0.99 - my)/(1.0-wd_y1-0.02)*coo_h);
+
+			for (i=0;i<86400;i++) if ((wxx < (coord[i][0]+0.0001))&&(wxx > (coord[i][0]-0.0001))&&(wyy < (coord[i][1]+0.0001))&&(wyy > (coord[i][1]-0.0001))) pi = i;
+
+		}
+		if (mods==GLFW_MOD_CONTROL)		// de-select points
+		{
+
+			selected[pi] = 0;
+		}
+		if (mods==0)					// select points
+		{
+			selected[pi] = 1;
+		}
+	}
 }
 
 void mouseweelscroll(GLFWwindow *wnd, double xoffset, double yoffset)
@@ -280,6 +314,9 @@ int main (int argc, char *argv[])	// MAIN
 		selected[snum] = 1;
 	}
 	fclose(f);
+	coo_w = max_coo_x - min_coo_x;
+	coo_h = max_coo_y - min_coo_y;
+	coo_a = max_coo_h - min_coo_h;
 
 	f = fopen(data_file,"rt");
 	if (f == NULL)
@@ -288,12 +325,33 @@ int main (int argc, char *argv[])	// MAIN
 		exit(0);
 	}
 	i = 0;
+	int j = 0;
 	while (!feof(f))
 	{
 		fscanf(f,"%f\t%f\n",&data[i][0],&data[i][1]);
+		if (i>=14400) if (selected[i-14400]>=0)
+		{
+			if (j==0)
+			{
+				max_data[0]=data[0][0];
+				max_data[1]=data[0][1];
+				min_data[0]=data[0][0];
+				min_data[1]=data[0][1];
+				j = 1;
+			}
+			else
+			{
+				if (max_data[0]<data[i][0]) max_data[0]=data[i][0];
+				if (max_data[1]<data[i][1]) max_data[1]=data[i][1];
+				if (min_data[0]>data[i][0]) min_data[0]=data[i][0];
+				if (min_data[1]>data[i][1]) min_data[1]=data[i][1];
+			}
+		}
 		i++;
 	}
 	fclose(f);
+	data_w[0] = max_data[0]-min_data[0];
+	data_w[1] = max_data[1]-min_data[1];
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
